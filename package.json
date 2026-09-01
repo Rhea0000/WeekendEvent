@@ -1,0 +1,12 @@
+{
+  "name": "randstad-weekend-agenda",
+  "version": "1.0.0",
+  "description": "Weekly-refreshing weekend events board for the Randstad area.",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "fetch-events": "node scripts/fetch-events.js"
+  }
+}

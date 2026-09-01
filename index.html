@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randstad Weekend Agenda</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #FFF7E8;
+    --paper: #FFFFFF;
+    --ink: #251643;
+    --muted: #8A80A0;
+    --line: #F0E4CE;
+
+    --tulip: #FF4D6D;
+    --tulip-soft: #FFE3E9;
+    --canal: #2E86FF;
+    --canal-soft: #E2EEFF;
+    --lilac: #9B5DE5;
+    --lilac-soft: #F0E6FC;
+    --grass: #21B37E;
+    --grass-soft: #DEF6EB;
+    --sun: #FFB100;
+    --sun-soft: #FFF1D2;
+    --grey: #6C7A93;
+    --grey-soft: #EAEEF5;
+  }
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    padding: 0 0 70px;
+  }
+  h1,h2,.display{ font-family:'Fredoka', sans-serif; }
+  .wrap{ max-width: 920px; margin: 0 auto; padding: 0 20px; }
+  a{ color: inherit; }
+
+  .bunting{ display:flex; justify-content:center; gap:14px; padding-top: 18px; }
+  .flag{
+    width:0; height:0;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 16px solid var(--c);
+    animation: sway 2.6s ease-in-out infinite;
+    transform-origin: top center;
+  }
+  .flag:nth-child(2n){ animation-delay: .3s; }
+  .flag:nth-child(3n){ animation-delay: .6s; }
+  @keyframes sway{ 0%,100%{ transform: rotate(-4deg);} 50%{ transform: rotate(4deg);} }
+
+  .hero{ text-align:center; padding: 10px 0 26px; }
+  .hero .eyebrow{ color: var(--canal); font-weight:600; font-size:13px; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .hero h1{ margin: 0 0 8px; font-size: clamp(30px, 5vw, 46px); font-weight:700; line-height:1.05; }
+  .hero h1 .accent{ color: var(--tulip); }
+  .hero p{ margin:0; color: var(--muted); font-size: 15px; }
+  .hero .clock{ margin-top: 10px; font-weight:600; color: var(--ink); font-size: 14px; }
+
+  .controls{
+    background: var(--paper); border-radius: 20px; padding: 14px 16px;
+    box-shadow: 0 6px 18px rgba(37,22,67,0.06);
+    display:flex; flex-wrap:wrap; gap:12px; align-items:center; justify-content:space-between;
+    margin-bottom: 22px;
+  }
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .chip{
+    font-weight:600; font-size: 13px; padding: 7px 14px; border-radius: 999px;
+    border: 2px solid var(--line); background: var(--paper); color: var(--muted);
+    cursor:pointer; transition: transform .12s ease, box-shadow .12s ease;
+  }
+  .chip:hover{ transform: translateY(-2px); }
+  .chip.active{ border-color: transparent; color: #fff; }
+  .chip[data-cat="food"].active{ background: var(--tulip); }
+  .chip[data-cat="music"].active{ background: var(--canal); }
+  .chip[data-cat="culture"].active{ background: var(--lilac); }
+  .chip[data-cat="outdoor"].active{ background: var(--grass); }
+  .chip[data-cat="family"].active{ background: var(--sun); color:#4a3300; }
+  .chip[data-cat="other"].active{ background: var(--grey); }
+
+  .refresh-btn{
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size: 14px;
+    padding: 9px 18px; border-radius: 999px; border:none; cursor:pointer;
+    background: var(--ink); color:#fff; transition: transform .12s ease;
+  }
+  .refresh-btn:hover{ transform: translateY(-2px) rotate(-1deg); }
+  .refresh-btn:disabled{ opacity:.5; cursor:wait; transform:none; }
+
+  .tabs{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tab{ font-weight:600; font-size: 13px; padding: 8px 14px; border-radius: 999px; cursor:pointer; color: var(--muted); background: var(--grey-soft); }
+  .tab.active{ background: var(--ink); color:#fff; }
+
+  .meta-line{ text-align:center; font-size: 12.5px; color: var(--muted); margin: -8px 0 20px; }
+  .meta-line .stale{ color: var(--tulip); font-weight:600; }
+
+  .grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; }
+  .card{
+    background: var(--paper); border-radius: 0 0 18px 18px; box-shadow: 0 8px 20px rgba(37,22,67,0.07);
+    opacity:0; transform: translateY(10px); animation: cardIn .45s ease forwards;
+    overflow:hidden; transition: transform .18s ease, box-shadow .18s ease;
+  }
+  .card:hover{ transform: translateY(-5px); box-shadow: 0 14px 28px rgba(37,22,67,0.13); }
+  @keyframes cardIn{ to{ opacity:1; transform:translateY(0);} }
+
+  .roof{ height: 34px; position:relative; background: var(--c-soft); clip-path: polygon(0% 100%, 50% 0%, 100% 100%); }
+  .roof .window{ position:absolute; top: 18px; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background: var(--c); }
+  .card-body{ padding: 16px 18px 18px; border-top: 5px solid var(--c); margin-top:-1px; }
+  .cat-tag{ display:inline-block; font-size: 11px; font-weight:700; letter-spacing:0.5px; text-transform:uppercase; color: var(--c); background: var(--c-soft); padding: 3px 9px; border-radius: 999px; margin-bottom: 9px; }
+  .ev-title{ font-family:'Fredoka', sans-serif; font-size: 17px; font-weight:600; margin: 0 0 6px; line-height:1.25; }
+  .ev-title a{ text-decoration:none; }
+  .ev-title a:hover{ text-decoration:underline; }
+  .ev-blurb{ font-size: 13.5px; color:#5B5470; line-height:1.5; margin-bottom: 12px; }
+
+  .ev-meta{ display:flex; flex-direction:column; gap:6px; font-size: 13px; margin-bottom: 12px; }
+  .ev-meta-row{ display:flex; align-items:center; gap:7px; color: var(--ink); }
+  .ev-meta-row .ico{ font-size: 14px; width:18px; text-align:center; }
+
+  .card-footer{ display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
+  .cost-badge{ font-weight:700; font-size: 13px; padding: 5px 11px; border-radius: 999px; }
+  .cost-badge.free{ background: var(--grass-soft); color: var(--grass); }
+  .cost-badge.paid{ background: var(--sun-soft); color: #8a5a00; }
+
+  .reg-badge{ font-weight:600; font-size: 11.5px; padding: 5px 10px; border-radius: 999px; background: var(--tulip-soft); color: var(--tulip); }
+  .reg-badge.open{ background: var(--grey-soft); color: var(--grey); }
+
+  .visit-link{ display:inline-block; margin-top:12px; font-weight:700; font-size: 13px; color: var(--canal); text-decoration:none; }
+  .visit-link:hover{ text-decoration:underline; }
+
+  .state-panel{ grid-column: 1 / -1; text-align:center; padding: 46px 20px; color: var(--muted); background: var(--paper); border-radius: 20px; font-size: 14px; line-height:1.8; }
+  .state-panel a{ color: var(--canal); font-weight:600; }
+
+  .skeleton-card{ background: var(--paper); border-radius: 18px; padding: 20px; height: 190px; box-shadow: 0 8px 20px rgba(37,22,67,0.05); }
+  .skel{ background: linear-gradient(90deg, #F3EFE3 25%, #FBF7EC 37%, #F3EFE3 63%); background-size:400% 100%; animation: shimmer 1.4s infinite; border-radius:8px; height:14px; margin-bottom:10px; }
+  @keyframes shimmer{ 0%{background-position:100% 0;} 100%{background-position:0 0;} }
+
+  footer{ margin-top: 34px; text-align:center; font-size: 12px; color: var(--muted); line-height:1.7; }
+</style>
+</head>
+<body>
+
+<div class="bunting" id="bunting"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Randstad · Updated weekly</div>
+    <h1>Your weekend, <span class="accent">sorted</span>.</h1>
+    <p>Free-first events across Amsterdam, Rotterdam, The Hague, Utrecht & nearby towns.</p>
+    <div class="clock" id="today-label">—</div>
+  </div>
+
+  <div class="controls">
+    <div class="chip-row" id="category-chips"></div>
+    <button class="refresh-btn" id="refresh-btn">↻ Check for updates</button>
+  </div>
+  <div class="controls" style="margin-top:-10px;">
+    <div class="tabs" id="weekend-tabs">
+      <div class="tab active" data-w="this">This weekend</div>
+      <div class="tab" data-w="next">Next weekend</div>
+      <div class="tab" data-w="later">Coming up · book ahead</div>
+    </div>
+  </div>
+  <div class="meta-line" id="meta-line">Loading…</div>
+
+  <div class="grid" id="board">
+    <div class="skeleton-card"><div class="skel" style="width:40%;"></div><div class="skel" style="width:90%;"></div><div class="skel" style="width:70%;"></div><div class="skel" style="width:60%;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="width:40%;"></div><div class="skel" style="width:80%;"></div><div class="skel" style="width:65%;"></div><div class="skel" style="width:55%;"></div></div>
+    <div class="skeleton-card"><div class="skel" style="width:40%;"></div><div class="skel" style="width:85%;"></div><div class="skel" style="width:75%;"></div><div class="skel" style="width:50%;"></div></div>
+  </div>
+
+  <footer>
+    Refreshed automatically every week by a GitHub Action · data/events.json<br>
+    Always double-check dates, prices and registration links before you book.
+  </footer>
+</div>
+
+<script>
+const CATEGORIES = [
+  { key: 'food', label: '🥐 Food & drink' },
+  { key: 'music', label: '🎵 Music & festivals' },
+  { key: 'culture', label: '🎨 Culture' },
+  { key: 'outdoor', label: '🌳 Outdoor' },
+  { key: 'family', label: '🎈 Family' },
+  { key: 'other', label: '✨ Other' }
+];
+const CAT_COLOR_VAR = { food:'--tulip', music:'--canal', culture:'--lilac', outdoor:'--grass', family:'--sun', other:'--grey' };
+const CAT_SOFT_VAR  = { food:'--tulip-soft', music:'--canal-soft', culture:'--lilac-soft', outdoor:'--grass-soft', family:'--sun-soft', other:'--grey-soft' };
+const BUNTING_COLORS = ['--tulip','--canal','--sun','--grass','--lilac','--canal','--tulip'];
+
+let state = {
+  events: [],
+  activeCats: new Set(CATEGORIES.map(c => c.key)),
+  activeTab: 'this',
+  generatedAt: null
+};
+
+function renderBunting(){
+  const holder = document.getElementById('bunting');
+  holder.innerHTML = '';
+  BUNTING_COLORS.forEach(c => {
+    const f = document.createElement('div');
+    f.className = 'flag';
+    f.style.setProperty('--c', `var(${c})`);
+    holder.appendChild(f);
+  });
+}
+renderBunting();
+
+function tickClock(){
+  const now = new Date();
+  document.getElementById('today-label').textContent =
+    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }) +
+    ' · ' + now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' });
+}
+tickClock();
+setInterval(tickClock, 15000);
+
+function renderChips(){
+  const holder = document.getElementById('category-chips');
+  holder.innerHTML = '';
+  CATEGORIES.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'chip' + (state.activeCats.has(c.key) ? ' active' : '');
+    el.dataset.cat = c.key;
+    el.textContent = c.label;
+    el.onclick = () => {
+      if (state.activeCats.has(c.key)) state.activeCats.delete(c.key);
+      else state.activeCats.add(c.key);
+      renderChips();
+      renderBoard();
+    };
+    holder.appendChild(el);
+  });
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.activeTab = tab.dataset.w;
+    renderBoard();
+  };
+});
+
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function renderBoard(){
+  const board = document.getElementById('board');
+  const filtered = state.events.filter(e =>
+    state.activeCats.has(e.category) && e.weekend === state.activeTab
+  );
+
+  if (filtered.length === 0){
+    board.innerHTML = `<div class="state-panel">
+      No matching events for this filter yet.<br>
+      Try switching on more categories, or browse directly:
+      <a href="https://www.iamsterdam.com/en/whats-on" target="_blank">iamsterdam.com</a> ·
+      <a href="https://www.rotterdam.info/en/agenda/" target="_blank">rotterdam.info</a> ·
+      <a href="https://www.uitagenda.nl" target="_blank">uitagenda.nl</a>
+    </div>`;
+    return;
+  }
+
+  board.innerHTML = '';
+  filtered.forEach((e, i) => {
+    const cVar = CAT_COLOR_VAR[e.category] || CAT_COLOR_VAR.other;
+    const cSoftVar = CAT_SOFT_VAR[e.category] || CAT_SOFT_VAR.other;
+    const catLabel = (CATEGORIES.find(c => c.key === e.category) || CATEGORIES[5]).label;
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.setProperty('--c', `var(${cVar})`);
+    card.style.setProperty('--c-soft', `var(${cSoftVar})`);
+    card.style.animationDelay = (i * 60) + 'ms';
+
+    const priceClass = e.free ? 'free' : 'paid';
+    const priceLabel = e.free ? 'Free' : (e.price || 'Paid');
+    const regHtml = e.registration_required
+      ? `<span class="reg-badge">🎟️ ${e.registration_deadline ? 'Book by ' + escapeHtml(e.registration_deadline) : 'Registration required'}</span>`
+      : `<span class="reg-badge open">Just show up</span>`;
+
+    card.innerHTML = `
+      <div class="roof"><div class="window"></div></div>
+      <div class="card-body">
+        <span class="cat-tag">${catLabel}</span>
+        <h3 class="ev-title">${escapeHtml(e.title)}</h3>
+        <p class="ev-blurb">${escapeHtml(e.blurb || '')}</p>
+        <div class="ev-meta">
+          <div class="ev-meta-row"><span class="ico">📍</span>${escapeHtml(e.city||'')}</div>
+          <div class="ev-meta-row"><span class="ico">🗓️</span>${escapeHtml(e.when||'')}</div>
+        </div>
+        <div class="card-footer">
+          <span class="cost-badge ${priceClass}">${escapeHtml(priceLabel)}</span>
+          ${regHtml}
+        </div>
+        ${e.url ? `<a class="visit-link" href="${escapeHtml(e.url)}" target="_blank">View details →</a>` : ''}
+      </div>
+    `;
+    board.appendChild(card);
+  });
+}
+
+function updateMetaLine(){
+  const meta = document.getElementById('meta-line');
+  if (!state.generatedAt){
+    meta.innerHTML = `<span class="stale">No data yet</span> — run the GitHub Action once to generate the first board.`;
+    return;
+  }
+  const d = new Date(state.generatedAt);
+  const ageDays = (Date.now() - d.getTime()) / 86400000;
+  const when = `${d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})} at ${d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+  meta.innerHTML = ageDays > 9
+    ? `<span class="stale">⚠ Last updated ${when}</span> — check the Actions tab if this looks stale`
+    : `Board last updated ${when} · ${state.events.length} events on file`;
+}
+
+async function loadEvents(){
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = 'Checking…';
+  try {
+    const res = await fetch('./data/events.json', { cache: 'no-store' });
+    const data = await res.json();
+    const events = ['this','next','later'].flatMap(tab =>
+      (data[tab] || []).map(e => ({ ...e, weekend: tab }))
+    );
+    state.events = events;
+    state.generatedAt = data.generatedAt;
+    renderBoard();
+    updateMetaLine();
+  } catch (err) {
+    console.error(err);
+    document.getElementById('board').innerHTML = `<div class="state-panel">
+      Couldn't load data/events.json.<br>
+      Make sure the GitHub Action has run at least once — check the Actions tab in your repo.
+    </div>`;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '↻ Check for updates';
+  }
+}
+
+renderChips();
+document.getElementById('refresh-btn').onclick = loadEvents;
+loadEvents();
+</script>
+</body>
+</html>
