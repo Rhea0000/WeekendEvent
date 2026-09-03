@@ -15,7 +15,7 @@ if (!GEMINI_API_KEY) {
 }
 
 // Flash models are the free-tier-eligible ones; Flash is plenty for this task.
-const MODEL = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+const MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
 const TAB_BRIEF = {
   this: { window: 'this coming Saturday and Sunday', count: '4 to 6' },
